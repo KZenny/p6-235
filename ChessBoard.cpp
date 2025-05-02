@@ -277,13 +277,18 @@ bool ChessBoard::attemptRound() {
     //Step 2: Reads in user input
     std::cin >> initial_row >> initial_col;
 
-    //Check if the input is valid. If not, clear the input stream and print "UNDO"
-    if (std::cin.fail() || initial_row < 0 || initial_row >= BOARD_LENGTH || initial_col < 0 || initial_col >= BOARD_LENGTH) {
+    if (initial_row < 0 || initial_row >= BOARD_LENGTH || initial_col < 0 || initial_col >= BOARD_LENGTH) {
+        std::cout << "Selected piece is out of bounds. Still current player's turn." << std::endl;
+        return false;
+    }
+
+    //Check if the input is valid. If not, clear the input stream and perform undo
+    if (std::cin.fail()) {
         std::cin.clear();
         if(undo()) {
-            playerOneTurn = !playerOneTurn;
             return true;
         }
+        std::cout << "Undo failed." << std::endl;
         return false;
     }
 
@@ -293,13 +298,18 @@ bool ChessBoard::attemptRound() {
     //Step 4: Reads in user input
     std::cin >> selected_row >> selected_col;
 
-    //Check if the input is valid. If not, clear the input stream and print "UNDO"
-    if (std::cin.fail() || selected_row < 0 || selected_row >= BOARD_LENGTH || selected_col < 0 || selected_col >= BOARD_LENGTH) {
+    if (selected_row < 0 || selected_row >= BOARD_LENGTH || selected_col < 0 || selected_col >= BOARD_LENGTH) {
+        std::cout << "Selected target square is out of bounds. Still current player's turn." << std::endl;
+        return false;
+    }
+    
+    //Check if the input is valid. If not, clear the input stream and perform undo
+    if (std::cin.fail()) {
         std::cin.clear();
         if(undo()) {
-            playerOneTurn = !playerOneTurn;
             return true;
         }
+        std::cout << "Undo failed." << std::endl;
         return false;
     }
 
@@ -363,13 +373,13 @@ bool ChessBoard::attemptRound() {
     if (moved_piece != nullptr) {
         moved_piece->setRow(from.first);
         moved_piece->setColumn(from.second);
-    }
+    } 
 
     board[to.first][to.second] = captured_piece;
     if (captured_piece != nullptr) {
         captured_piece->setRow(to.first);
         captured_piece->setColumn(to.second);
-    }
+    } 
 
     //Toggle player one turn back
     playerOneTurn = !playerOneTurn;

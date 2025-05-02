@@ -12,12 +12,13 @@ int main() {
     std::cout << "Initial Chessboard:\n";
     board.display();
 
-    std::cout << "1: " << board.isPlayerOneTurn() << std::endl;
-    board.attemptRound();
-    std::cout << "0: " << board.isPlayerOneTurn() << std::endl;
     board.attemptRound();
     board.display();
     std::cout << board.isPlayerOneTurn() << std::endl;
+
+
+
+
 
     return 0;
 }
