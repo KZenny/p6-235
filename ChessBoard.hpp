@@ -13,8 +13,10 @@
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
+#include <stack>
 
 #include "pieces_module.hpp"
+#include "Move.hpp"
 
 namespace BoardColorizer {
     /*
@@ -46,6 +48,8 @@ class ChessBoard {
         // Track the board state & all pieces that were ever in play
         std::vector<std::vector<ChessPiece*>> board;
         std::list<ChessPiece*> pieces;
+
+        std::stack<Move> past_moves_; // Stores all previously executed moves
 
     public:
         /**
@@ -147,4 +151,46 @@ class ChessBoard {
          *       player they belong to
          */
         void display() const;
+
+        /**
+        * @brief Attempts to execute a round of play on the chessboard. A round consists of the 
+         * following sequence of actions:
+         * 
+         * 1) Prompts the user to select a piece by entering two space-separated integers 
+         *    or type anything else to undo the last move
+         * 2) Records their input, or returns the result of attempting to undo the previous action
+         * 3) Prompt the user to select a target square to move the piece 
+         *    or type anything else to undo.
+         * 4) Records their input, or returns the result of attempting to undo the previous action
+         * 5) Attempt to execute the move, using move()
+         * 6) If the move is successful, records the action by pushing a Move to past_moves_.
+         * 7) If the move OR undo is successful, toggles the `playerOneTurn` boolean member of `ChessBoard`
+         * 
+         * @return Returns true if the round has been completed successfully, that is:
+         *      - If a pieced was succesfully moved.
+         *      - Or a move was successfully undone.
+         * @post The `past_moves_` stack & `playerOneTurn` members are updated as described above
+         */
+        bool attemptRound();
+
+        /**
+         * @brief Reverts the most recent action executed by a player,
+         *        if there is a `Move` object in the `past_moves_` stack
+         * 
+         *        This is done by updating the moved piece to its original
+         *        position, and the captured piece (if applicable) to the target
+         *        position specified by the `Move` object at the top of the stack
+         * 
+         * @return True if the action was undone succesfully.
+         *         False otherwise (ie. if there are no moves to undo)
+         * 
+         * @post 1) Reverts the `board` member's pointers to reflect
+         *          the board state before the most recent move, if possible. 
+         *       2) Updates the row / col members of each involved `ChessPiece` 
+         *          (ie. the moved & captured pieces) to match their reverted 
+         *          positions on the board
+         *       3) The most recent `Move` object is removed from the `past_moves_`
+         *          stack 
+         */ 
+        bool undo();
 };

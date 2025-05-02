@@ -247,3 +247,124 @@ bool ChessBoard::move(const int& row, const int& col, const int& new_row, const 
     
     return true;
 }
+
+/**
+ * @brief Attempts to execute a round of play on the chessboard. A round consists of the 
+ * following sequence of actions:
+ * 
+ * 1) Prompts the user to select a piece by entering two space-separated integers 
+ *    or type anything else to undo the last move
+ * 2) Records their input, or returns the result of attempting to undo the previous action
+ * 3) Prompt the user to select a target square to move the piece 
+ *    or type anything else to undo.
+ * 4) Records their input, or returns the result of attempting to undo the previous action
+ * 5) Attempt to execute the move, using move()
+ * 6) If the move is successful, records the action by pushing a Move to past_moves_.
+ * 7) If the move OR undo is successful, toggles the `playerOneTurn` boolean member of `ChessBoard`
+ * 
+ * @return Returns true if the round has been completed successfully, that is:
+ *      - If a pieced was succesfully moved.
+ *      - Or a move was successfully undone.
+ * @post The `past_moves_` stack & `playerOneTurn` members are updated as described above
+ */
+bool ChessBoard::attemptRound() {
+    //Initialize user input variables
+    int initial_row, initial_col, selected_row, selected_col;
+
+    //Step 1: Prompts the user to select a square on the board (as two space-separated integers), corresponding to the piece they want to move or type in anything else to undo the last move
+    std::cout << "[PLAYER 1] Select a piece (Enter two integers: '<row> <col>'), or any other input to undo the last action." << std::endl;
+
+    //Step 2: Reads in user input
+    std::cin >> initial_row >> initial_col;
+
+    //Check if the input is valid. If not, clear the input stream and print "UNDO"
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cout << "UNDO" << std::endl;
+        if(undo()) {
+            playerOneTurn = !playerOneTurn;
+            return true;
+        }
+        return false;
+    }
+
+    //Step 3: Prompt user to select another square on the board, corresponding to the space they want their selected piece to move to, or type in anything else to undo the last move.
+    std::cout << "[PLAYER 1] Specify a square to move to (Enter two integers: '<row> <col>'), or any other input to undo the last action." << std::endl;
+
+    //Step 4: Reads in user input
+    std::cin >> selected_row >> selected_col;
+
+    //Check if the input is valid. If not, clear the input stream and print "UNDO"
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cout << "UNDO" << std::endl;
+        if(undo()) {
+            playerOneTurn = !playerOneTurn;
+            return true;
+        }
+        return false;
+    }
+
+    //Step 5: Attempt to execute the move
+    if ((move(initial_row, initial_col, selected_row, selected_col))) {
+        //Step 6: If the move was executed succesfully, push a Move to past_moves_
+        Move move({initial_row, initial_col}, {selected_row, selected_col}, board[initial_row][initial_col],board[selected_row][selected_col]);
+        past_moves_.push(move);
+        //Step 7: If the move was executed successfully, toggle the playerOneTurn member of ChessBoard
+        playerOneTurn = !playerOneTurn; 
+        std::cout << "Moved (" << initial_row << "," << initial_col << ") to (" << selected_row << "," << selected_col << ")" << std::endl;
+        return true;
+    /// If the move was not executed successfully, print that it was unable to move the piece.     
+    } else {
+        std::cout << "Unable to move piece at (" << initial_row << "," << initial_col << ") to (" << selected_row << "," << selected_col << ")" << 
+        std::endl;
+        return false;
+    } 
+}
+
+/**
+ * @brief Reverts the most recent action executed by a player,
+ *        if there is a `Move` object in the `past_moves_` stack
+ * 
+ *        This is done by updating the moved piece to its original
+ *        position, and the captured piece (if applicable) to the target
+ *        position specified by the `Move` object at the top of the stack
+ * 
+ * @return True if the action was undone succesfully.
+ *         False otherwise (ie. if there are no moves to undo)
+ * 
+ * @post 1) Reverts the `board` member's pointers to reflect
+ *          the board state before the most recent move, if possible. 
+ *       2) Updates the row / col members of each involved `ChessPiece` 
+ *          (ie. the moved & captured pieces) to match their reverted 
+ *          positions on the board
+ *       3) The most recent `Move` object is removed from the `past_moves_`
+ *          stack 
+ */ 
+ bool ChessBoard::undo() {
+    //If the stack is empty (ie. no moves to undo), return false
+    if (past_moves_.empty()) {
+        std::cout << "No moves to undo." << std::endl;
+        return false;
+    }
+
+    //Pop the most recent move
+    Move last_move = past_moves_.top();
+    past_moves_.pop();
+
+    //Get relevant data to undo move
+    Square from = last_move.getOriginalPosition(); 
+    Square to = last_move.getTargetPosition();     
+    ChessPiece* moved_piece = last_move.getMovedPiece();
+    ChessPiece* captured_piece = last_move.getCapturedPiece();
+
+    //Revert the piece(s) to their original position
+    board[from.first][from.second] = moved_piece;
+    board[to.first][to.second] = captured_piece;
+
+    //Toggle player one turn back
+    playerOneTurn = !playerOneTurn;
+
+    std::cout << "Undo move from (" << from.first << ", " << from.second << ")" << std::endl;
+    return true;
+}
