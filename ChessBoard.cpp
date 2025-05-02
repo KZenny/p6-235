@@ -306,7 +306,12 @@ bool ChessBoard::attemptRound() {
     }
 
     //Step 5: Attempt to execute the move
+
     ChessPiece* moved_piece = board[initial_row][initial_col]; 
+    if (!moved_piece) {
+        std::cout << "No piece at selected position.\n";
+        return false;
+    }
     ChessPiece* captured_piece = board[selected_row][selected_col];
     if ((move(initial_row, initial_col, selected_row, selected_col))) {
         //Step 6: If the move was executed succesfully, push a Move to past_moves_
