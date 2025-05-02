@@ -16,7 +16,9 @@ int main() {
     board.display();
     std::cout << board.isPlayerOneTurn() << std::endl;
 
-
+    board.attemptRound();
+    board.display();
+    std::cout << board.isPlayerOneTurn() << std::endl;
 
 
 
