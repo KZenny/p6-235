@@ -277,11 +277,6 @@ bool ChessBoard::attemptRound() {
     //Step 2: Reads in user input
     std::cin >> initial_row >> initial_col;
 
-    if (initial_row < 0 || initial_row >= BOARD_LENGTH || initial_col < 0 || initial_col >= BOARD_LENGTH) {
-        std::cout << "Selected piece is out of bounds. Still current player's turn." << std::endl;
-        return false;
-    }
-
     //Check if the input is valid. If not, clear the input stream and perform undo
     if (std::cin.fail()) {
         std::cin.clear();
@@ -289,6 +284,11 @@ bool ChessBoard::attemptRound() {
             return true;
         }
         std::cout << "Undo failed." << std::endl;
+        return false;
+    }
+    
+    if (initial_row < 0 || initial_row >= BOARD_LENGTH || initial_col < 0 || initial_col >= BOARD_LENGTH) {
+        std::cout << "Selected piece is out of bounds. Still current player's turn." << std::endl;
         return false;
     }
 
@@ -298,11 +298,6 @@ bool ChessBoard::attemptRound() {
     //Step 4: Reads in user input
     std::cin >> selected_row >> selected_col;
 
-    if (selected_row < 0 || selected_row >= BOARD_LENGTH || selected_col < 0 || selected_col >= BOARD_LENGTH) {
-        std::cout << "Selected target square is out of bounds. Still current player's turn." << std::endl;
-        return false;
-    }
-    
     //Check if the input is valid. If not, clear the input stream and perform undo
     if (std::cin.fail()) {
         std::cin.clear();
@@ -313,6 +308,11 @@ bool ChessBoard::attemptRound() {
         return false;
     }
 
+    if (selected_row < 0 || selected_row >= BOARD_LENGTH || selected_col < 0 || selected_col >= BOARD_LENGTH) {
+        std::cout << "Selected target square is out of bounds. Still current player's turn." << std::endl;
+        return false;
+    }
+    
     //Step 5: Attempt to execute the move
     ChessPiece* moved_piece1 = board[initial_row][initial_col]; 
     ChessPiece* captured_piece1 = board[selected_row][selected_col];
