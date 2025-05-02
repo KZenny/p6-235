@@ -193,4 +193,6 @@ class ChessBoard {
          *          stack 
          */ 
         bool undo();
+
+        bool isPlayerOneTurn() const;
 };

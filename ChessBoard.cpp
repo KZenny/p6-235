@@ -278,9 +278,8 @@ bool ChessBoard::attemptRound() {
     std::cin >> initial_row >> initial_col;
 
     //Check if the input is valid. If not, clear the input stream and print "UNDO"
-    if (std::cin.fail()) {
+    if (std::cin.fail() || initial_row < 0 || initial_row >= BOARD_LENGTH || initial_col < 0 || initial_col >= BOARD_LENGTH) {
         std::cin.clear();
-        std::cout << "UNDO" << std::endl;
         if(undo()) {
             playerOneTurn = !playerOneTurn;
             return true;
@@ -295,9 +294,8 @@ bool ChessBoard::attemptRound() {
     std::cin >> selected_row >> selected_col;
 
     //Check if the input is valid. If not, clear the input stream and print "UNDO"
-    if (std::cin.fail()) {
+    if (std::cin.fail() || selected_row < 0 || selected_row >= BOARD_LENGTH || selected_col < 0 || selected_col >= BOARD_LENGTH) {
         std::cin.clear();
-        std::cout << "UNDO" << std::endl;
         if(undo()) {
             playerOneTurn = !playerOneTurn;
             return true;
@@ -306,9 +304,11 @@ bool ChessBoard::attemptRound() {
     }
 
     //Step 5: Attempt to execute the move
+    ChessPiece* moved_piece1 = board[initial_row][initial_col]; 
+    ChessPiece* captured_piece1 = board[selected_row][selected_col];
     if ((move(initial_row, initial_col, selected_row, selected_col))) {
         //Step 6: If the move was executed succesfully, push a Move to past_moves_
-        Move move({initial_row, initial_col}, {selected_row, selected_col}, board[initial_row][initial_col] , board[selected_row][selected_col]);
+        Move move({initial_row, initial_col}, {selected_row, selected_col}, moved_piece1, captured_piece1);
         past_moves_.push(move);
         //Step 7: If the move was executed successfully, toggle the playerOneTurn member of ChessBoard
         playerOneTurn = !playerOneTurn; 
@@ -376,4 +376,8 @@ bool ChessBoard::attemptRound() {
 
     std::cout << "Undo move from (" << from.first << ", " << from.second << ")" << std::endl;
     return true;
+}
+
+bool ChessBoard::isPlayerOneTurn() const{
+    return playerOneTurn;
 }

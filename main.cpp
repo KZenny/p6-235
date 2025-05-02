@@ -1,26 +1,23 @@
 #include <iostream>
+#include <vector>
+#include <string>
+#include "ChessBoard.hpp"
+#include "pieces/Queen.hpp"
 
 int main() {
-    int initial_row, initial_col, selected_row, selected_col;
-    std::cout << "[PLAYER 1] Select a piece (Enter two integers: '<row> <col>'), or any other input to undo the last action." << std::endl;
-    std::cin >> initial_row >> initial_col;
+    // Initialize the chessboard
+    ChessBoard board("BLACK", "WHITE");
 
-    if (std::cin.fail()) {
-        std::cin.clear();
-        std::cout << "UNDO" << std::endl;
-        return 0;
-    }
+    // Display the initial board
+    std::cout << "Initial Chessboard:\n";
+    board.display();
 
-    std::cout << "[PLAYER 1] Specify a square to move to (Enter two integers: '<row> <col>'), or any other input to undo the last action." << std::endl;
-    std::cin >> selected_row >> selected_col;
-
-    if (std::cin.fail()) {
-        std::cin.clear();
-        std::cout << "UNDO" << std::endl;
-        return 0;
-    }
-
-    std::cout << "Moved (" << initial_row << "," << initial_col << ") to (" << selected_row << "," << selected_col << ")" << std::endl;
+    std::cout << "1: " << board.isPlayerOneTurn() << std::endl;
+    board.attemptRound();
+    std::cout << "0: " << board.isPlayerOneTurn() << std::endl;
+    board.attemptRound();
+    board.display();
+    std::cout << board.isPlayerOneTurn() << std::endl;
 
     return 0;
 }
