@@ -287,10 +287,7 @@ bool ChessBoard::attemptRound() {
         return false;
     }
 
-    if (initial_row < 0 || initial_row >= BOARD_LENGTH || initial_col < 0 || initial_col >= BOARD_LENGTH) {
-        std::cout << "Out of bounds. Unable to move piece at (" << initial_row << "," << initial_col << ")" << std::endl;
-        return false;
-    }
+
 
     //Step 3: Prompt user to select another square on the board, corresponding to the space they want their selected piece to move to, or type in anything else to undo the last move.
     std::cout << "[PLAYER 1] Specify a square to move to (Enter two integers: '<row> <col>'), or any other input to undo the last action." << std::endl;
@@ -308,12 +305,7 @@ bool ChessBoard::attemptRound() {
         return false;
     }
 
-    //Segment Fault Fix: Check if the selected square is within the bounds of the board. 
-    if (selected_row < 0 || selected_row >= BOARD_LENGTH || selected_col < 0 || selected_col >= BOARD_LENGTH) {
-        std::cout << "Out of bounds. Unable to move piece at (" << initial_row << "," << initial_col << ") to (" << selected_row << "," << selected_col << ")" << 
-        std::endl;
-        return false;
-    }
+
     
     //Step 5: Attempt to execute the move
 
