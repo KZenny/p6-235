@@ -218,35 +218,36 @@ void ChessBoard::display() const {
 *      - The moved piece's row and col members are updated to reflect the move
 *      If a pawn is moved from its start position, its double_jumpable_ flag is set to false.. 
 */
-bool ChessBoard::move(const int& row, const int& col, const int& new_row, const int& new_col) {
-    if (row < 0 || col < 0 || row >= BOARD_LENGTH || col >= BOARD_LENGTH) { return false; }
-    ChessPiece* movingPiece = board[row][col];
-    const std::string& colorInPlay = (playerOneTurn) ? p1_color : p2_color;
-    // If there is no piece to move or it is of the opposite color, terminate
-    if (!movingPiece) { return false; }
-    if (movingPiece->getColor() != colorInPlay) { return false; }
+    bool ChessBoard::move(const int& row, const int& col, const int& new_row, const int& new_col) {
+        if (row < 0 || col < 0 || row >= BOARD_LENGTH || col >= BOARD_LENGTH) { return false; }
+        if (new_row < 0 || new_col < 0 || new_row >= BOARD_LENGTH || new_col >= BOARD_LENGTH) { return false; }
+        ChessPiece* movingPiece = board[row][col];
+        const std::string& colorInPlay = (playerOneTurn) ? p1_color : p2_color;
+        // If there is no piece to move or it is of the opposite color, terminate
+        if (!movingPiece) { return false; }
+        if (movingPiece->getColor() != colorInPlay) { return false; }
 
-    // If we can't move, terminate
-    if (!movingPiece->canMove(new_row, new_col, board)) { return false; }
+        // If we can't move, terminate
+        if (!movingPiece->canMove(new_row, new_col, board)) { return false; }
 
-    // Store captured piece
-    ChessPiece* captured_piece = board[new_row][new_col];
+        // Store captured piece
+        ChessPiece* captured_piece = board[new_row][new_col];
 
-    // Cannot capture a King in chess
-    if (captured_piece && captured_piece->getType() == "KING") { return false; }
-    
-    // Update moved piece
-    board[new_row][new_col] = movingPiece;
+        // Cannot capture a King in chess
+        if (captured_piece && captured_piece->getType() == "KING") { return false; }
+        
+        // Update moved piece
+        board[new_row][new_col] = movingPiece;
 
-    // Valid logic unless for castle, but for simplicity's sake, we'll leave that out for now.
-    board[row][col] = nullptr;
+        // Valid logic unless for castle, but for simplicity's sake, we'll leave that out for now.
+        board[row][col] = nullptr;
 
-    movingPiece->setRow(new_row);
-    movingPiece->setColumn(new_col);
-    movingPiece->flagMoved();
-    
-    return true;
-}
+        movingPiece->setRow(new_row);
+        movingPiece->setColumn(new_col);
+        movingPiece->flagMoved();
+        
+        return true;
+    }
 
 /**
  * @brief Attempts to execute a round of play on the chessboard. A round consists of the 

@@ -15,9 +15,5 @@ int main() {
     board.attemptRound();
     board.display();
     std::cout << board.isPlayerOneTurn() << std::endl;
-
-
-
-
     return 0;
 }
