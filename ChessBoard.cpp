@@ -316,9 +316,10 @@ bool ChessBoard::attemptRound() {
     }
     
     //Step 5: Attempt to execute the move
-    ChessPiece* moved_piece1 = board[initial_row][initial_col]; 
-    ChessPiece* captured_piece1 = board[selected_row][selected_col];
+
     if ((move(initial_row, initial_col, selected_row, selected_col))) {
+        ChessPiece* moved_piece1 = board[initial_row][initial_col]; 
+        ChessPiece* captured_piece1 = board[selected_row][selected_col];
         //Step 6: If the move was executed succesfully, push a Move to past_moves_
         Move move({initial_row, initial_col}, {selected_row, selected_col}, moved_piece1, captured_piece1);
         past_moves_.push(move);
