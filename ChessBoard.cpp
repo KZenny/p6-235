@@ -218,36 +218,35 @@ void ChessBoard::display() const {
 *      - The moved piece's row and col members are updated to reflect the move
 *      If a pawn is moved from its start position, its double_jumpable_ flag is set to false.. 
 */
-    bool ChessBoard::move(const int& row, const int& col, const int& new_row, const int& new_col) {
-        if (row < 0 || col < 0 || row >= BOARD_LENGTH || col >= BOARD_LENGTH) { return false; }
-        if (new_row < 0 || new_col < 0 || new_row >= BOARD_LENGTH || new_col >= BOARD_LENGTH) { return false; }
-        ChessPiece* movingPiece = board[row][col];
-        const std::string& colorInPlay = (playerOneTurn) ? p1_color : p2_color;
-        // If there is no piece to move or it is of the opposite color, terminate
-        if (!movingPiece) { return false; }
-        if (movingPiece->getColor() != colorInPlay) { return false; }
+bool ChessBoard::move(const int& row, const int& col, const int& new_row, const int& new_col) {
+    if (row < 0 || col < 0 || row >= BOARD_LENGTH || col >= BOARD_LENGTH) { return false; }
+    ChessPiece* movingPiece = board[row][col];
+    const std::string& colorInPlay = (playerOneTurn) ? p1_color : p2_color;
+    // If there is no piece to move or it is of the opposite color, terminate
+    if (!movingPiece) { return false; }
+    if (movingPiece->getColor() != colorInPlay) { return false; }
 
-        // If we can't move, terminate
-        if (!movingPiece->canMove(new_row, new_col, board)) { return false; }
+    // If we can't move, terminate
+    if (!movingPiece->canMove(new_row, new_col, board)) { return false; }
 
-        // Store captured piece
-        ChessPiece* captured_piece = board[new_row][new_col];
+    // Store captured piece
+    ChessPiece* captured_piece = board[new_row][new_col];
 
-        // Cannot capture a King in chess
-        if (captured_piece && captured_piece->getType() == "KING") { return false; }
-        
-        // Update moved piece
-        board[new_row][new_col] = movingPiece;
+    // Cannot capture a King in chess
+    if (captured_piece && captured_piece->getType() == "KING") { return false; }
+    
+    // Update moved piece
+    board[new_row][new_col] = movingPiece;
 
-        // Valid logic unless for castle, but for simplicity's sake, we'll leave that out for now.
-        board[row][col] = nullptr;
+    // Valid logic unless for castle, but for simplicity's sake, we'll leave that out for now.
+    board[row][col] = nullptr;
 
-        movingPiece->setRow(new_row);
-        movingPiece->setColumn(new_col);
-        movingPiece->flagMoved();
-        
-        return true;
-    }
+    movingPiece->setRow(new_row);
+    movingPiece->setColumn(new_col);
+    movingPiece->flagMoved();
+    
+    return true;
+}
 
 /**
  * @brief Attempts to execute a round of play on the chessboard. A round consists of the 
@@ -277,8 +276,8 @@ bool ChessBoard::attemptRound() {
 
     //Step 2: Reads in user input
     std::cin >> initial_row >> initial_col;
-    std::cout << initial_row << initial_col << std::endl;
-    //Check if the input is an integer. If not, clear the input stream and perform undo
+
+    //Check if the input is valid. If not, clear the input stream and perform undo
     if (std::cin.fail()) {
         std::cin.clear();
         if(undo()) {
@@ -288,20 +287,31 @@ bool ChessBoard::attemptRound() {
         return false;
     }
 
+    if (initial_row < 0 || initial_row >= BOARD_LENGTH || initial_col < 0 || initial_col >= BOARD_LENGTH) {
+        std::cout << "Out of bounds. Unable to move piece at (" << initial_row << "," << initial_col << ")" << std::endl;
+        return false;
+    }
+
     //Step 3: Prompt user to select another square on the board, corresponding to the space they want their selected piece to move to, or type in anything else to undo the last move.
     std::cout << "[PLAYER 1] Specify a square to move to (Enter two integers: '<row> <col>'), or any other input to undo the last action." << std::endl;
 
     //Step 4: Reads in user input
     std::cin >> selected_row >> selected_col;
-    std::cout << selected_row << selected_col << std::endl;
 
-    //Check if the input is an integer. If not, clear the input stream and perform undo
+    //Check if the input is valid. If not, clear the input stream and perform undo
     if (std::cin.fail()) {
         std::cin.clear();
         if(undo()) {
             return true;
         }
         std::cout << "Undo failed." << std::endl;
+        return false;
+    }
+
+    //Segment Fault Fix: Check if the selected square is within the bounds of the board. 
+    if (selected_row < 0 || selected_row >= BOARD_LENGTH || selected_col < 0 || selected_col >= BOARD_LENGTH) {
+        std::cout << "Out of bounds. Unable to move piece at (" << initial_row << "," << initial_col << ") to (" << selected_row << "," << selected_col << ")" << 
+        std::endl;
         return false;
     }
     
@@ -376,7 +386,7 @@ bool ChessBoard::attemptRound() {
     //Toggle player one turn back
     playerOneTurn = !playerOneTurn;
 
-    std::cout << "Undid move from (" << from.first << "," << from.second << ") to (" << to.first << "," << to.second << ")" << std::endl;
+    std::cout << "Undo move from (" << from.first << ", " << from.second << ")" << std::endl;
     return true;
 }
 
