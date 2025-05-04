@@ -219,7 +219,12 @@ void ChessBoard::display() const {
 *      If a pawn is moved from its start position, its double_jumpable_ flag is set to false.. 
 */
 bool ChessBoard::move(const int& row, const int& col, const int& new_row, const int& new_col) {
-    if (row < 0 || col < 0 || row >= BOARD_LENGTH || col >= BOARD_LENGTH) { return false; }
+    if (row < 0 || col < 0 || row >= BOARD_LENGTH || col >= BOARD_LENGTH) { 
+        return false; 
+    }
+    if (new_row < 0 || new_col < 0 || new_row >= BOARD_LENGTH || new_col >= BOARD_LENGTH) { 
+        return false; 
+    }
     ChessPiece* movingPiece = board[row][col];
     const std::string& colorInPlay = (playerOneTurn) ? p1_color : p2_color;
     // If there is no piece to move or it is of the opposite color, terminate
