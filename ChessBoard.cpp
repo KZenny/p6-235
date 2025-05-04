@@ -292,8 +292,6 @@ bool ChessBoard::attemptRound() {
         return false;
     }
 
-
-
     //Step 3: Prompt user to select another square on the board, corresponding to the space they want their selected piece to move to, or type in anything else to undo the last move.
     std::cout << "[PLAYER 1] Specify a square to move to (Enter two integers: '<row> <col>'), or any other input to undo the last action." << std::endl;
 
@@ -310,11 +308,9 @@ bool ChessBoard::attemptRound() {
         return false;
     }
 
-
-    
     //Step 5: Attempt to execute the move
-    ChessPiece* moved_piece1 = board[initial_row][initial_col]; 
-    ChessPiece* captured_piece1 = board[selected_row][selected_col];
+    ChessPiece* moved_piece1 = getPieceAt(initial_row, initial_col);
+    ChessPiece* captured_piece1 = getPieceAt(selected_row, selected_col);
     if ((move(initial_row, initial_col, selected_row, selected_col))) {
         //Step 6: If the move was executed succesfully, push a Move to past_moves_
         Move move({initial_row, initial_col}, {selected_row, selected_col}, moved_piece1, captured_piece1);
@@ -390,3 +386,11 @@ bool ChessBoard::attemptRound() {
 bool ChessBoard::isPlayerOneTurn() const{
     return playerOneTurn;
 }
+
+ChessPiece* ChessBoard::getPieceAt(int row, int col) const {
+    if (row < 0 || col < 0 || row >= BOARD_LENGTH || col >= BOARD_LENGTH) {
+        return nullptr;
+    }
+    return board[row][col];
+}
+

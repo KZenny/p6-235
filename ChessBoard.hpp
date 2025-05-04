@@ -195,4 +195,6 @@ class ChessBoard {
         bool undo();
 
         bool isPlayerOneTurn() const;
+
+        ChessPiece* getPieceAt(int row, int col) const;
 };
